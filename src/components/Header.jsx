@@ -2,10 +2,21 @@ import React, { useContext, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { ShoppingCartIcon } from "@heroicons/react/24/solid";
 import { CartContext } from "../App";
+import { AuthContext } from "../provider/AuthProvider";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const [cart,setCart] = useContext(CartContext)
+  const {user, logOut} = useContext(AuthContext)
   const [isMenuopen, setIsMenuOpen] = useState(false);
+  const handleLogOut = () => {
+    logOut().then(result => {
+      toast.success('Logout Successfully')
+    }).catch(error => {
+      console.log(error.message);
+      toast.error('Logout Failed')
+    })
+  }
   return (
     <div className="px-4 py-5 md:px-24 lg:px-8 sm:max-w-xl md:max-w-full lg:max-w-screen-xl mx-auto">
       <div className="flex items-center justify-between">
@@ -49,6 +60,23 @@ const Header = () => {
           >
             About us
           </NavLink>
+          {
+            user ? <>
+              <span>{user.email}</span>
+              <button className="btn" onClick={handleLogOut}>Logout</button>
+            </> : <><NavLink
+            to="/login"
+            className={({ isActive }) => (isActive ? "active" : "default")}
+          >
+            Login
+          </NavLink>
+          <NavLink
+            to="/register"
+            className={({ isActive }) => (isActive ? "active" : "default")}
+          >
+            Register
+          </NavLink></>
+          }
         </div>
         <div className="lg:hidden">
           <button onClick={() => setIsMenuOpen(true)}>
